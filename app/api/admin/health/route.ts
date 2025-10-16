@@ -147,15 +147,15 @@ async function getDatabaseStats() {
     supabaseAdmin
       .from('keywords')
       .select('status, source, depth')
-      .not('status', 'is', null),
+      .not('status', 'is', null) as any,
     supabaseAdmin
       .from('doc_counts')
       .select('date, created_at')
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) as any,
     supabaseAdmin
       .from('jobs')
       .select('status, type, created_at')
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) as any
   ])
 
   // 키워드 통계

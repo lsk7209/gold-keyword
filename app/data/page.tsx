@@ -194,7 +194,7 @@ export default function DataPage() {
     try {
       setExporting(true)
       
-      const params = {
+      const params: any = {
         hideLowSv: filters.hideLowSv.toString(),
         hideZeroDocs: filters.hideZeroDocs.toString(),
         sort: filters.sort

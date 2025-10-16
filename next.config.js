@@ -4,7 +4,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@supabase/supabase-js']
   },
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    CUSTOM_KEY: process.env.CUSTOM_KEY || '',
   },
   async headers() {
     return [

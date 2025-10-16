@@ -167,9 +167,13 @@ async function getDatabaseStats() {
   }
 
   keywordStats.data?.forEach(keyword => {
-    keywordBreakdown.byStatus[keyword.status] = (keywordBreakdown.byStatus[keyword.status] || 0) + 1
-    keywordBreakdown.bySource[keyword.source] = (keywordBreakdown.bySource[keyword.source] || 0) + 1
-    keywordBreakdown.byDepth[keyword.depth] = (keywordBreakdown.byDepth[keyword.depth] || 0) + 1
+    const status = keyword.status as string
+    const source = keyword.source as string
+    const depth = keyword.depth as number
+    
+    keywordBreakdown.byStatus[status] = (keywordBreakdown.byStatus[status] || 0) + 1
+    keywordBreakdown.bySource[source] = (keywordBreakdown.bySource[source] || 0) + 1
+    keywordBreakdown.byDepth[depth] = (keywordBreakdown.byDepth[depth] || 0) + 1
   })
 
   // 문서수 통계

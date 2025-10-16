@@ -314,7 +314,7 @@ export class ApiKeyManager {
   // 쿨다운 만료된 키 활성화
   public async activateExpiredKeys(): Promise<void> {
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await (supabaseAdmin as any)
         .from('api_keys')
         .update({
           status: 'active',

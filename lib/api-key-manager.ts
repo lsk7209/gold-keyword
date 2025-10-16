@@ -100,7 +100,7 @@ export class ApiKeyManager {
         .select('*')
         .eq('provider', provider)
         .eq('status', 'active')
-        .is('cooldown_until', null)
+        .is('cooldown_until', null) as any
 
       if (error) {
         console.error('API 키 조회 실패:', error)

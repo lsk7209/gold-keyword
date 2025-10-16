@@ -242,8 +242,8 @@ export class QueueManager {
 
     // 키워드 그룹 생성 (최대 5개씩)
     const keywordGroups: string[][] = []
-    for (let i = 0; i < keywords.length; i += 5) {
-      const group = keywords.slice(i, i + 5).map(k => k.term)
+    for (let i = 0; i < (keywords as any[]).length; i += 5) {
+      const group = (keywords as any[]).slice(i, i + 5).map((k: any) => k.term)
       keywordGroups.push(group)
     }
 

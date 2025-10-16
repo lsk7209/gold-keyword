@@ -151,14 +151,30 @@ export class ApiKeyManager {
   // API 키 사용 (토큰 소모)
   public async useApiKey(keyId: number, tokensUsed: number = 1): Promise<void> {
     try {
-      const { error } = await supabaseAdmin
+      // 먼저 현재 키 정보 조회
+      const { data: currentKey, error: selectError } = await supabaseAdmin
+        .from('api_keys')
+        .select('window_tokens, used_today')
+        .eq('id', keyId)
+        .single() as any
+
+      if (selectError || !currentKey) {
+        console.error('API 키 조회 실패:', selectError)
+        return
+      }
+
+      // 새로운 값 계산
+      const newWindowTokens = Math.max(0, currentKey.window_tokens - tokensUsed)
+      const newUsedToday = currentKey.used_today + 1
+
+      const { error } = await (supabaseAdmin
         .from('api_keys')
         .update({
-          window_tokens: supabaseAdmin.raw(`GREATEST(0, window_tokens - ${tokensUsed})`),
-          used_today: supabaseAdmin.raw('used_today + 1'),
+          window_tokens: newWindowTokens,
+          used_today: newUsedToday,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', keyId)
+        } as any)
+        .eq('id', keyId) as any)
 
       if (error) {
         console.error('API 키 사용 업데이트 실패:', error)

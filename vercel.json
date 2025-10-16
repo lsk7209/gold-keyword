@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm ci && npm run build",
+  "installCommand": "npm ci --prefer-offline --no-audit",
   "functions": {
     "app/api/collect/related/route.ts": {
       "maxDuration": 300

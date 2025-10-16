@@ -471,7 +471,7 @@ export class QueueManager {
   // 큐 통계 조회
   public async getQueueStats(): Promise<QueueStats> {
     try {
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await (supabaseAdmin as any)
         .from('jobs')
         .select('status')
         .not('status', 'is', null)

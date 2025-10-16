@@ -166,7 +166,7 @@ async function getDatabaseStats() {
     byDepth: {} as Record<string, number>
   }
 
-  keywordStats.data?.forEach(keyword => {
+  keywordStats.data?.forEach((keyword: any) => {
     const status = keyword.status as string
     const source = keyword.source as string
     const depth = keyword.depth as number
@@ -182,7 +182,7 @@ async function getDatabaseStats() {
     byDate: {} as Record<string, number>
   }
 
-  docCountStats.data?.forEach(docCount => {
+  docCountStats.data?.forEach((docCount: any) => {
     const date = docCount.date
     docCountBreakdown.byDate[date] = (docCountBreakdown.byDate[date] || 0) + 1
   })
@@ -194,7 +194,7 @@ async function getDatabaseStats() {
     byType: {} as Record<string, number>
   }
 
-  jobStats.data?.forEach(job => {
+  jobStats.data?.forEach((job: any) => {
     jobBreakdown.byStatus[job.status] = (jobBreakdown.byStatus[job.status] || 0) + 1
     jobBreakdown.byType[job.type] = (jobBreakdown.byType[job.type] || 0) + 1
   })

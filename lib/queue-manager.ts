@@ -395,7 +395,7 @@ export class QueueManager {
     status: 'processing' | 'completed' | 'failed',
     errorMessage?: string
   ): Promise<void> {
-    const updateData: JobUpdate = {
+    const updateData: any = {
       status,
       updated_at: new Date().toISOString()
     }

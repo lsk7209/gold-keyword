@@ -1,0 +1,23 @@
+{
+  "functions": {
+    "app/api/collect/related/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/collect/docs/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/export/csv/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/collect/related",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/collect/docs", 
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}

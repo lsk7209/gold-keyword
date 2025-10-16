@@ -488,7 +488,7 @@ export class QueueManager {
         total: data?.length || 0
       }
 
-      data?.forEach(job => {
+      (data as any[])?.forEach((job: any) => {
         stats[job.status as keyof typeof stats]++
       })
 

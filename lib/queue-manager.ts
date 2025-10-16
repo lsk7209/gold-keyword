@@ -207,7 +207,7 @@ export class QueueManager {
         // 재시도 로직
         const shouldRetry = await this.handleJobFailure(job, error)
         if (!shouldRetry) {
-          await this.updateJobStatus(job.id, 'failed', error.message)
+          await this.updateJobStatus(job.id, 'failed', (error as any).message)
         }
       }
 
@@ -434,7 +434,7 @@ export class QueueManager {
         attempts: newAttempts,
         scheduled_at: scheduledAt.toISOString(),
         status: 'pending',
-        error_message: error.message
+        error_message: (error as any).message
       })
       .eq('id', job.id)
 

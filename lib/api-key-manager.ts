@@ -173,7 +173,7 @@ export class ApiKeyManager {
           window_tokens: newWindowTokens,
           used_today: newUsedToday,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', keyId) as any)
 
       if (error) {
@@ -223,7 +223,7 @@ export class ApiKeyManager {
           cooldown_until: cooldownUntil,
           last_error: error.message || 'Unknown error',
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', keyId) as any)
 
       if (updateError) {
@@ -273,7 +273,7 @@ export class ApiKeyManager {
           .update({
             window_tokens: newTokens,
             updated_at: new Date().toISOString()
-          })
+          } as any)
           .eq('id', key.id) as any)
 
         if (error) {
@@ -293,7 +293,7 @@ export class ApiKeyManager {
         .update({
           used_today: 0,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('status', 'active') as any)
 
       if (error) {

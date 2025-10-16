@@ -181,18 +181,18 @@ export async function POST(request: NextRequest) {
       // 전체 통계 조회
       const { data: stats, error } = await supabaseAdmin
         .from('keyword_latest_view')
-        .select('sv_total, cafe_total, blog_total, web_total, news_total')
+        .select('sv_total, cafe_total, blog_total, web_total, news_total') as any
 
       if (error) {
         throw error
       }
 
       const totalKeywords = stats?.length || 0
-      const avgSv = stats?.reduce((sum, k) => sum + k.sv_total, 0) / totalKeywords || 0
-      const avgCafe = stats?.reduce((sum, k) => sum + k.cafe_total, 0) / totalKeywords || 0
-      const avgBlog = stats?.reduce((sum, k) => sum + k.blog_total, 0) / totalKeywords || 0
-      const avgWeb = stats?.reduce((sum, k) => sum + k.web_total, 0) / totalKeywords || 0
-      const avgNews = stats?.reduce((sum, k) => sum + k.news_total, 0) / totalKeywords || 0
+      const avgSv = stats?.reduce((sum: number, k: any) => sum + k.sv_total, 0) / totalKeywords || 0
+      const avgCafe = stats?.reduce((sum: number, k: any) => sum + k.cafe_total, 0) / totalKeywords || 0
+      const avgBlog = stats?.reduce((sum: number, k: any) => sum + k.blog_total, 0) / totalKeywords || 0
+      const avgWeb = stats?.reduce((sum: number, k: any) => sum + k.web_total, 0) / totalKeywords || 0
+      const avgNews = stats?.reduce((sum: number, k: any) => sum + k.news_total, 0) / totalKeywords || 0
 
       return NextResponse.json({
         totalKeywords,

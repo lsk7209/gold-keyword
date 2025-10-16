@@ -457,7 +457,7 @@ export class QueueManager {
     success: boolean,
     processingTime: number
   ): void {
-    const stats = this.processingStats[type]
+    const stats = (this.processingStats as any)[type]
     
     if (success) {
       stats.processed++

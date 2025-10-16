@@ -122,7 +122,7 @@ export class ApiKeyManager {
           usageRatio: key.used_today / key.daily_quota
         }))
         .filter((key: any) => key.canUse)
-        .sort((a, b) => {
+        .sort((a: any, b: any) => {
           // 사용률 낮은 순
           if (a.usageRatio !== b.usageRatio) {
             return a.usageRatio - b.usageRatio

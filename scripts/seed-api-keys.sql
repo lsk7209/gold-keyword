@@ -1,32 +1,65 @@
 -- API 키 시드 데이터 삽입 스크립트
--- 환경변수에서 JSON 데이터를 파싱하여 api_keys 테이블에 삽입
+-- 환경변수에서 API 키 정보를 읽어와서 데이터베이스에 삽입합니다.
 
--- 기존 API 키 삭제 (개발 환경에서만 사용)
--- DELETE FROM api_keys;
+-- 기존 테스트 데이터 삭제 (선택사항)
+-- DELETE FROM api_keys WHERE label LIKE 'test-%';
 
--- 네이버 오픈API 키 삽입 예시
--- 실제 환경에서는 환경변수 JSON을 파싱하여 동적으로 삽입
-INSERT INTO api_keys (provider, label, key_id, key_secret, qps_limit, daily_quota, window_refill_rate)
+-- 1. 검색광고 API 키 삽입
+-- 실제 키로 교체하세요
+INSERT INTO api_keys (provider, label, key_id, key_secret, customer_id, qps_limit, daily_quota, status)
 VALUES 
-  ('openapi', 'open-1', 'your_client_id_1', 'your_client_secret_1', 3, 20000, 3),
-  ('openapi', 'open-2', 'your_client_id_2', 'your_client_secret_2', 3, 20000, 3),
-  ('openapi', 'open-3', 'your_client_id_3', 'your_client_secret_3', 3, 20000, 3);
+    ('searchad', 'searchad-key-1', 'your-access-license-1', 'your-secret-1', 'your-customer-id-1', 0.5, 8000, 'active'),
+    ('searchad', 'searchad-key-2', 'your-access-license-2', 'your-secret-2', 'your-customer-id-2', 0.5, 8000, 'active')
+ON CONFLICT (provider, label) DO UPDATE SET
+    key_id = EXCLUDED.key_id,
+    key_secret = EXCLUDED.key_secret,
+    customer_id = EXCLUDED.customer_id,
+    qps_limit = EXCLUDED.qps_limit,
+    daily_quota = EXCLUDED.daily_quota,
+    status = EXCLUDED.status,
+    updated_at = NOW();
 
--- 네이버 검색광고 API 키 삽입 예시
-INSERT INTO api_keys (provider, label, key_id, key_secret, customer_id, qps_limit, daily_quota, window_refill_rate)
+-- 2. 오픈API 키 삽입
+-- 실제 키로 교체하세요
+INSERT INTO api_keys (provider, label, key_id, key_secret, customer_id, qps_limit, daily_quota, status)
 VALUES 
-  ('searchad', 'ad-1', 'your_access_license_1', 'your_secret_1', 'your_customer_id_1', 0.5, 8000, 0.5),
-  ('searchad', 'ad-2', 'your_access_license_2', 'your_secret_2', 'your_customer_id_2', 0.5, 8000, 0.5);
+    ('openapi', 'openapi-key-1', 'your-client-id-1', 'your-client-secret-1', NULL, 3.0, 20000, 'active'),
+    ('openapi', 'openapi-key-2', 'your-client-id-2', 'your-client-secret-2', NULL, 3.0, 20000, 'active')
+ON CONFLICT (provider, label) DO UPDATE SET
+    key_id = EXCLUDED.key_id,
+    key_secret = EXCLUDED.key_secret,
+    qps_limit = EXCLUDED.qps_limit,
+    daily_quota = EXCLUDED.daily_quota,
+    status = EXCLUDED.status,
+    updated_at = NOW();
 
--- API 키 상태 확인
+-- 3. API 키 상태 확인
 SELECT 
-  provider,
-  label,
-  status,
-  qps_limit,
-  daily_quota,
-  used_today,
-  cooldown_until,
-  created_at
+    provider,
+    label,
+    status,
+    qps_limit,
+    daily_quota,
+    used_today,
+    CASE 
+        WHEN cooldown_until IS NOT NULL AND cooldown_until > NOW() 
+        THEN 'Cooling down until ' || cooldown_until::text
+        ELSE 'Ready'
+    END as availability,
+    created_at
 FROM api_keys
 ORDER BY provider, label;
+
+-- 4. API 키 통계
+SELECT 
+    provider,
+    COUNT(*) as total_keys,
+    COUNT(*) FILTER (WHERE status = 'active') as active_keys,
+    COUNT(*) FILTER (WHERE status = 'cooling') as cooling_keys,
+    COUNT(*) FILTER (WHERE status = 'disabled') as disabled_keys,
+    SUM(daily_quota) as total_daily_quota,
+    SUM(used_today) as total_used_today,
+    ROUND(SUM(used_today)::numeric / NULLIF(SUM(daily_quota), 0) * 100, 2) as usage_percentage
+FROM api_keys
+GROUP BY provider
+ORDER BY provider;

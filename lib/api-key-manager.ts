@@ -101,7 +101,6 @@ export class ApiKeyManager {
         .eq('provider', provider)
         .eq('status', 'active')
         .is('cooldown_until', null)
-        .lt('used_today', supabaseAdmin.raw('daily_quota'))
 
       if (error) {
         console.error('API 키 조회 실패:', error)
@@ -113,8 +112,9 @@ export class ApiKeyManager {
         return null
       }
 
-      // 토큰이 있는 키 선택 (사용률 낮은 순, 토큰 높은 순)
+      // 토큰이 있고 일일 쿼터를 초과하지 않은 키 선택 (사용률 낮은 순, 토큰 높은 순)
       const availableKeys = keys
+        .filter(key => key.used_today < key.daily_quota) // 일일 쿼터 체크
         .map(key => ({
           ...key,
           availableTokens: Math.min(key.window_tokens, rateLimitConfig.tokenBucket.maxTokens * key.qps_limit),

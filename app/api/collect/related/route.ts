@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     const { data: keywordStats, error: statsError } = await supabaseAdmin
       .from('keywords')
       .select('status, source')
-      .not('status', 'is', null)
+      .not('status', 'is', null) as any
 
     if (statsError) {
       console.error('키워드 통계 조회 실패:', statsError)
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
       related: 0
     }
 
-    keywordStats?.forEach(keyword => {
+    keywordStats?.forEach((keyword: any) => {
       statusBreakdown[keyword.status as keyof typeof statusBreakdown]++
       sourceBreakdown[keyword.source as keyof typeof sourceBreakdown]++
     })

@@ -73,11 +73,11 @@ export class ApiKeyManager {
 
   // API 키 업서트
   private async upsertApiKey(keyData: ApiKeyInsert): Promise<void> {
-    const { error } = await supabaseAdmin
+    const { error } = await (supabaseAdmin
       .from('api_keys')
-      .upsert(keyData, {
+      .upsert(keyData as any, {
         onConflict: 'provider,label'
-      })
+      }) as any)
 
     if (error) {
       console.error('API 키 업서트 실패:', error)

@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm install && npm run build",
-  "installCommand": "npm install --prefer-offline --no-audit",
+  "buildCommand": "npm install --include=dev && npm run build",
+  "installCommand": "npm install --include=dev --prefer-offline --no-audit",
   "functions": {
     "app/api/collect/related/route.ts": {
       "maxDuration": 300

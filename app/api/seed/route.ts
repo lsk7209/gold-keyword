@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       .from('keywords')
       .select('id, status')
       .eq('term', normalizedTerm)
-      .single()
+      .single() as any
 
     if (checkError && checkError.code !== 'PGRST116') {
       console.error('키워드 중복 확인 실패:', checkError)
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         status: 'queued'
       })
       .select('id')
-      .single()
+      .single() as any
 
     if (insertError) {
       console.error('시드 키워드 등록 실패:', insertError)

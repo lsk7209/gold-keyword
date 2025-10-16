@@ -69,7 +69,7 @@ export class QueueManager {
         scheduled_at: scheduledAt?.toISOString() || new Date().toISOString()
       }
 
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await (supabaseAdmin as any)
         .from('jobs')
         .insert(jobData)
         .select('id')
@@ -157,7 +157,7 @@ export class QueueManager {
   private async processNextJob(): Promise<void> {
     try {
       // 처리할 작업 조회
-      const { data: job, error } = await supabaseAdmin
+      const { data: job, error } = await (supabaseAdmin as any)
         .from('jobs')
         .select('*')
         .eq('status', 'pending')
@@ -225,7 +225,7 @@ export class QueueManager {
     }
 
     // 키워드 조회
-    const { data: keywords, error } = await supabaseAdmin
+    const { data: keywords, error } = await (supabaseAdmin as any)
       .from('keywords')
       .select('id, term')
       .in('id', keywordIds)
@@ -405,7 +405,7 @@ export class QueueManager {
       updateData.completed_at = new Date().toISOString()
     }
 
-    const { error } = await supabaseAdmin
+    const { error } = await (supabaseAdmin as any)
       .from('jobs')
       .update(updateData)
       .eq('id', jobId)
@@ -428,7 +428,7 @@ export class QueueManager {
     const delay = Math.min(1000 * Math.pow(2, newAttempts - 1), 30000)
     const scheduledAt = new Date(Date.now() + delay)
 
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await (supabaseAdmin as any)
       .from('jobs')
       .update({
         attempts: newAttempts,

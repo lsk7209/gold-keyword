@@ -114,14 +114,14 @@ export class ApiKeyManager {
 
       // 토큰이 있고 일일 쿼터를 초과하지 않은 키 선택 (사용률 낮은 순, 토큰 높은 순)
       const availableKeys = keys
-        .filter(key => key.used_today < key.daily_quota) // 일일 쿼터 체크
-        .map(key => ({
+        .filter((key: any) => key.used_today < key.daily_quota) // 일일 쿼터 체크
+        .map((key: any) => ({
           ...key,
           availableTokens: Math.min(key.window_tokens, rateLimitConfig.tokenBucket.maxTokens * key.qps_limit),
           canUse: key.window_tokens >= 1,
           usageRatio: key.used_today / key.daily_quota
         }))
-        .filter(key => key.canUse)
+        .filter((key: any) => key.canUse)
         .sort((a, b) => {
           // 사용률 낮은 순
           if (a.usageRatio !== b.usageRatio) {

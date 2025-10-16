@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     query = query.limit(pageSize + 1) // 다음 페이지 존재 여부 확인용
 
     // 쿼리 실행
-    const { data: keywords, error, count } = await query
+    const { data: keywords, error, count } = await query as any
 
     if (error) {
       console.error('키워드 조회 실패:', error)
@@ -114,12 +114,12 @@ export async function GET(request: NextRequest) {
     // 다음 커서 생성
     let nextCursor = null
     if (hasNextPage && actualKeywords.length > 0) {
-      const lastKeyword = actualKeywords[actualKeywords.length - 1]
+      const lastKeyword = actualKeywords[actualKeywords.length - 1] as any
       nextCursor = JSON.stringify({ id: lastKeyword.id })
     }
 
     // 응답 데이터 포맷팅
-    const formattedKeywords = actualKeywords.map(keyword => ({
+    const formattedKeywords = actualKeywords.map((keyword: any) => ({
       id: keyword.id,
       keyword: keyword.keyword,
       sv_total: keyword.sv_total,

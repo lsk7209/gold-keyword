@@ -167,14 +167,14 @@ export class ApiKeyManager {
       const newWindowTokens = Math.max(0, currentKey.window_tokens - tokensUsed)
       const newUsedToday = currentKey.used_today + 1
 
-      const { error } = await (supabaseAdmin
+      const { error } = await (supabaseAdmin as any)
         .from('api_keys')
         .update({
           window_tokens: newWindowTokens,
           used_today: newUsedToday,
           updated_at: new Date().toISOString()
-        } as any)
-        .eq('id', keyId) as any)
+        })
+        .eq('id', keyId)
 
       if (error) {
         console.error('API 키 사용 업데이트 실패:', error)
@@ -216,15 +216,15 @@ export class ApiKeyManager {
         ? new Date(Date.now() + cooldownSeconds * 1000).toISOString()
         : null
 
-      const { error: updateError } = await (supabaseAdmin
+      const { error: updateError } = await (supabaseAdmin as any)
         .from('api_keys')
         .update({
           status: newStatus,
           cooldown_until: cooldownUntil,
           last_error: error.message || 'Unknown error',
           updated_at: new Date().toISOString()
-        } as any)
-        .eq('id', keyId) as any)
+        })
+        .eq('id', keyId)
 
       if (updateError) {
         console.error('API 키 에러 처리 실패:', updateError)
@@ -268,13 +268,13 @@ export class ApiKeyManager {
           key.window_tokens + (key.window_refill_rate * timePassed / 1000)
         )
 
-        const { error } = await (supabaseAdmin
+        const { error } = await (supabaseAdmin as any)
           .from('api_keys')
           .update({
             window_tokens: newTokens,
             updated_at: new Date().toISOString()
-          } as any)
-          .eq('id', key.id) as any)
+          })
+          .eq('id', key.id)
 
         if (error) {
           console.error(`키 ${key.id} 토큰 리필 실패:`, error)
@@ -288,13 +288,13 @@ export class ApiKeyManager {
   // 일일 쿼터 리셋 (매일 자정 실행)
   public async resetDailyQuota(): Promise<void> {
     try {
-      const { error } = await (supabaseAdmin
+      const { error } = await (supabaseAdmin as any)
         .from('api_keys')
         .update({
           used_today: 0,
           updated_at: new Date().toISOString()
-        } as any)
-        .eq('status', 'active') as any)
+        })
+        .eq('status', 'active')
 
       if (error) {
         console.error('일일 쿼터 리셋 실패:', error)

@@ -480,7 +480,7 @@ export class QueueManager {
         throw error
       }
 
-      const stats = {
+      const jobStats = {
         pending: 0,
         processing: 0,
         completed: 0,
@@ -489,10 +489,10 @@ export class QueueManager {
       }
 
       (data as any[])?.forEach((job: any) => {
-        stats[job.status as keyof typeof stats]++
+        jobStats[job.status as keyof typeof jobStats]++
       })
 
-      return stats
+      return jobStats
     } catch (error) {
       console.error('큐 통계 조회 실패:', error)
       return {

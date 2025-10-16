@@ -173,7 +173,7 @@ export class ApiKeyManager {
           window_tokens: newWindowTokens,
           used_today: newUsedToday,
           updated_at: new Date().toISOString()
-        } as any)
+        })
         .eq('id', keyId) as any)
 
       if (error) {
@@ -216,7 +216,7 @@ export class ApiKeyManager {
         ? new Date(Date.now() + cooldownSeconds * 1000).toISOString()
         : null
 
-      const { error: updateError } = await supabaseAdmin
+      const { error: updateError } = await (supabaseAdmin
         .from('api_keys')
         .update({
           status: newStatus,
@@ -224,7 +224,7 @@ export class ApiKeyManager {
           last_error: error.message || 'Unknown error',
           updated_at: new Date().toISOString()
         })
-        .eq('id', keyId)
+        .eq('id', keyId) as any)
 
       if (updateError) {
         console.error('API 키 에러 처리 실패:', updateError)
@@ -248,23 +248,37 @@ export class ApiKeyManager {
     this.lastRefill = now
 
     try {
-      // 모든 활성 키의 토큰 리필
-      const { error } = await supabaseAdmin
+      // 먼저 활성 키들을 조회
+      const { data: activeKeys, error: selectError } = await supabaseAdmin
         .from('api_keys')
-        .update({
-          window_tokens: supabaseAdmin.raw(`
-            LEAST(
-              ${rateLimitConfig.tokenBucket.maxTokens} * qps_limit,
-              window_tokens + (window_refill_rate * ${timePassed / 1000})
-            )
-          `),
-          updated_at: new Date().toISOString()
-        })
+        .select('id, window_tokens, window_refill_rate, qps_limit')
         .eq('status', 'active')
-        .is('cooldown_until', null)
+        .is('cooldown_until', null) as any
 
-      if (error) {
-        console.error('토큰 리필 실패:', error)
+      if (selectError || !activeKeys) {
+        console.error('활성 키 조회 실패:', selectError)
+        return
+      }
+
+      // 각 키의 토큰을 개별적으로 업데이트
+      for (const key of activeKeys) {
+        const maxTokens = rateLimitConfig.tokenBucket.maxTokens * key.qps_limit
+        const newTokens = Math.min(
+          maxTokens,
+          key.window_tokens + (key.window_refill_rate * timePassed / 1000)
+        )
+
+        const { error } = await (supabaseAdmin
+          .from('api_keys')
+          .update({
+            window_tokens: newTokens,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', key.id) as any)
+
+        if (error) {
+          console.error(`키 ${key.id} 토큰 리필 실패:`, error)
+        }
       }
     } catch (error) {
       console.error('토큰 리필 실패:', error)
@@ -274,13 +288,13 @@ export class ApiKeyManager {
   // 일일 쿼터 리셋 (매일 자정 실행)
   public async resetDailyQuota(): Promise<void> {
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await (supabaseAdmin
         .from('api_keys')
         .update({
           used_today: 0,
           updated_at: new Date().toISOString()
         })
-        .eq('status', 'active')
+        .eq('status', 'active') as any)
 
       if (error) {
         console.error('일일 쿼터 리셋 실패:', error)

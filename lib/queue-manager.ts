@@ -235,15 +235,17 @@ export class QueueManager {
       throw new Error(`키워드 조회 실패: ${error.message}`)
     }
 
-    if (!keywords || keywords.length === 0) {
+    const typedKeywords = keywords as any[]
+
+    if (!typedKeywords || typedKeywords.length === 0) {
       console.log('처리할 키워드가 없습니다.')
       return
     }
 
     // 키워드 그룹 생성 (최대 5개씩)
     const keywordGroups: string[][] = []
-    for (let i = 0; i < (keywords as any[]).length; i += 5) {
-      const group = (keywords as any[]).slice(i, i + 5).map((k: any) => k.term)
+    for (let i = 0; i < typedKeywords.length; i += 5) {
+      const group = typedKeywords.slice(i, i + 5).map((k: any) => k.term)
       keywordGroups.push(group)
     }
 
@@ -267,7 +269,7 @@ export class QueueManager {
     }
 
     // 키워드 조회
-    const { data: keywords, error } = await supabaseAdmin
+    const { data: keywords, error } = await (supabaseAdmin as any)
       .from('keywords')
       .select('id, term')
       .in('id', keywordIds)
@@ -277,7 +279,9 @@ export class QueueManager {
       throw new Error(`키워드 조회 실패: ${error.message}`)
     }
 
-    if (!keywords || keywords.length === 0) {
+    const typedKeywords = keywords as any[]
+
+    if (!typedKeywords || typedKeywords.length === 0) {
       console.log('처리할 키워드가 없습니다.')
       return
     }
@@ -286,11 +290,11 @@ export class QueueManager {
     const docCounts = await this.rateLimiter.executeWithRateLimit(
       'openapi',
       'docs',
-      () => this.openApiClient.getDocCountsBatch(keywords.map(k => k.term))
+      () => this.openApiClient.getDocCountsBatch(typedKeywords.map((k: any) => k.term))
     )
 
     // 데이터베이스에 저장
-    await this.saveDocCounts(keywords, docCounts)
+    await this.saveDocCounts(typedKeywords, docCounts)
   }
 
   // 연관키워드 저장

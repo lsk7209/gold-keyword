@@ -343,7 +343,7 @@ export class ApiKeyManager {
     searchad: ApiKeyWithTokens[]
   }> {
     try {
-      const { data: keys, error } = await supabaseAdmin
+      const { data: keys, error } = await (supabaseAdmin as any)
         .from('api_keys')
         .select('*')
         .order('provider', { ascending: true })
@@ -354,18 +354,18 @@ export class ApiKeyManager {
         throw error
       }
 
-      const openapi = keys
-        ?.filter(key => key.provider === 'openapi')
-        .map(key => ({
+      const openapi = (keys as any[])
+        ?.filter((key: any) => key.provider === 'openapi')
+        .map((key: any) => ({
           ...key,
           availableTokens: Math.min(key.window_tokens, rateLimitConfig.tokenBucket.maxTokens * key.qps_limit),
           canUse: key.window_tokens >= 1 && key.status === 'active',
           usageRatio: key.used_today / key.daily_quota
         })) || []
 
-      const searchad = keys
-        ?.filter(key => key.provider === 'searchad')
-        .map(key => ({
+      const searchad = (keys as any[])
+        ?.filter((key: any) => key.provider === 'searchad')
+        .map((key: any) => ({
           ...key,
           availableTokens: Math.min(key.window_tokens, rateLimitConfig.tokenBucket.maxTokens * key.qps_limit),
           canUse: key.window_tokens >= 1 && key.status === 'active',

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 시드 키워드 등록
-    const { data: keyword, error: insertError } = await supabaseAdmin
+    const { data: keyword, error: insertError } = await (supabaseAdmin
       .from('keywords')
       .insert({
         term: normalizedTerm,
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         status: 'queued'
       })
       .select('id')
-      .single() as any
+      .single() as any)
 
     if (insertError) {
       console.error('시드 키워드 등록 실패:', insertError)

@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         .from('keywords')
         .select('id')
         .eq('status', 'queued')
-        .limit(batchSize || 300)
+        .limit(batchSize || 300) as any
 
       if (keywords && keywords.length > 0) {
         const jobIds = await queueManager.enqueueRelatedKeywords(
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         .from('keywords')
         .select('id')
         .eq('status', 'fetched_rel')
-        .limit(batchSize || 800)
+        .limit(batchSize || 800) as any
 
       if (keywords && keywords.length > 0) {
         const jobIds = await queueManager.enqueueDocCounts(

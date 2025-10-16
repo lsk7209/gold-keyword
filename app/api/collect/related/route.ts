@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       .eq('status', 'queued')
       .order('source', { ascending: true }) // seed 우선
       .order('created_at', { ascending: true })
-      .limit(batchSize)
+      .limit(batchSize) as any
 
     if (selectError) {
       console.error('키워드 조회 실패:', selectError)

@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       .select('id, term')
       .eq('status', 'fetched_rel')
       .order('created_at', { ascending: true })
-      .limit(batchSize)
+      .limit(batchSize) as any
 
     if (selectError) {
       console.error('키워드 조회 실패:', selectError)

@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         source: 'seed',
         depth: 0,
         status: 'queued'
-      })
+      } as any)
       .select('id')
       .single() as any)
 

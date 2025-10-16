@@ -68,11 +68,11 @@ export async function POST(request: NextRequest) {
 
     // 큐 매니저로 작업 처리
     const queueManager = QueueManager.getInstance()
-    const jobIds = await queueManager.enqueueRelatedKeywords(keywords.map(k => k.id))
+    const jobIds = await queueManager.enqueueRelatedKeywords(keywords.map((k: any) => k.id))
 
     // 처리 결과 로깅
-    const seedCount = keywords.filter(k => k.source === 'seed').length
-    const relatedCount = keywords.filter(k => k.source === 'related').length
+    const seedCount = keywords.filter((k: any) => k.source === 'seed').length
+    const relatedCount = keywords.filter((k: any) => k.source === 'related').length
 
     console.log(`연관키워드 수집 작업 큐에 추가: ${keywords.length}개 (시드: ${seedCount}, 연관: ${relatedCount})`)
 

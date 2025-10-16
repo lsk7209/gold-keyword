@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     // 큐 매니저로 작업 처리
     const queueManager = QueueManager.getInstance()
-    const jobIds = await queueManager.enqueueDocCounts(keywords.map(k => k.id))
+    const jobIds = await queueManager.enqueueDocCounts(keywords.map((k: any) => k.id))
 
     console.log(`문서수 수집 작업 큐에 추가: ${keywords.length}개`)
 

@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
       if (keywords && keywords.length > 0) {
         const jobIds = await queueManager.enqueueRelatedKeywords(
-          keywords.map(k => k.id),
+          keywords.map((k: any) => k.id),
           Math.min(5, keywords.length)
         )
         result = {
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
       if (keywords && keywords.length > 0) {
         const jobIds = await queueManager.enqueueDocCounts(
-          keywords.map(k => k.id),
+          keywords.map((k: any) => k.id),
           Math.min(10, keywords.length)
         )
         result = {

@@ -9,7 +9,14 @@
     "lint": "next lint",
     "db:generate": "supabase gen types typescript --project-id YOUR_PROJECT_ID > lib/database.types.ts",
     "db:reset": "supabase db reset",
-    "db:migrate": "supabase db push"
+    "db:migrate": "supabase db push",
+    "test:api": "node scripts/test-api.js",
+    "test:api:local": "node scripts/test-api.js http://localhost:3000 test-token-123",
+    "monitor": "node scripts/monitor-system.js",
+    "monitor:local": "node scripts/monitor-system.js http://localhost:3000 test-token-123 30",
+    "setup:env": "cp env.example .env.local && echo '환경변수 파일이 생성되었습니다. .env.local을 편집하세요.'",
+    "setup:db": "echo 'Supabase SQL Editor에서 scripts/setup-database.sql을 실행하세요.'",
+    "setup:keys": "echo 'scripts/seed-api-keys.sql을 편집하여 실제 API 키로 교체한 후 Supabase에서 실행하세요.'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",

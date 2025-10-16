@@ -321,7 +321,7 @@ export class QueueManager {
       status: 'fetched_rel' as const
     }))
 
-    const { error: insertError } = await supabaseAdmin
+    const { error: insertError } = await (supabaseAdmin as any)
       .from('keywords')
       .upsert(keywordInserts, {
         onConflict: 'term'
@@ -333,7 +333,7 @@ export class QueueManager {
 
     // 부모 키워드 상태 업데이트
     const parentIds = parentKeywords.map(k => k.id)
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await (supabaseAdmin as any)
       .from('keywords')
       .update({ status: 'fetched_rel' })
       .in('id', parentIds)
@@ -365,7 +365,7 @@ export class QueueManager {
       raw: docCount.raw
     }))
 
-    const { error: insertError } = await supabaseAdmin
+    const { error: insertError } = await (supabaseAdmin as any)
       .from('doc_counts')
       .upsert(docCountInserts, {
         onConflict: 'keyword_id,date'
@@ -377,7 +377,7 @@ export class QueueManager {
 
     // 키워드 상태 업데이트
     const keywordIds = keywords.map(k => k.id)
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await (supabaseAdmin as any)
       .from('keywords')
       .update({ status: 'counted_docs' })
       .in('id', keywordIds)

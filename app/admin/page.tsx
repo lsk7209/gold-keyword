@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Activity, Key, Database, Clock, AlertTriangle, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
+import { Activity, Key, Database, Clock, AlertTriangle, CheckCircle, XCircle, RefreshCw, Play, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatNumber, formatDate } from '@/lib/utils'
 
@@ -58,6 +58,7 @@ export default function AdminPage() {
   const [healthData, setHealthData] = useState<HealthData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [triggering, setTriggering] = useState<{related: boolean, docs: boolean}>({related: false, docs: false})
 
   const loadHealthData = async () => {
     try {
@@ -91,6 +92,36 @@ export default function AdminPage() {
     const interval = setInterval(loadHealthData, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  // 수동 수집 트리거
+  const triggerCollection = async (type: 'related' | 'docs') => {
+    try {
+      setTriggering(prev => ({ ...prev, [type]: true }))
+      
+      const response = await fetch('/api/trigger/collect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SERVER_TOKEN || 'demo-token'}`
+        },
+        body: JSON.stringify({ type, batchSize: type === 'related' ? 300 : 800 })
+      })
+
+      const result = await response.json()
+      
+      if (response.ok) {
+        alert(`${type === 'related' ? '연관키워드' : '문서수'} 수집이 시작되었습니다. (${result.processed}개 처리)`)
+        // 헬스 데이터 새로고침
+        await loadHealthData()
+      } else {
+        alert(`수집 실패: ${result.error}`)
+      }
+    } catch (error) {
+      alert('수집 요청 중 오류가 발생했습니다.')
+    } finally {
+      setTriggering(prev => ({ ...prev, [type]: false }))
+    }
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -161,10 +192,42 @@ export default function AdminPage() {
             마지막 업데이트: {formatDate(healthData.timestamp)}
           </p>
         </div>
-        <Button onClick={loadHealthData} className="flex items-center space-x-2">
-          <RefreshCw className="h-4 w-4" />
-          <span>새로고침</span>
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button 
+            onClick={() => triggerCollection('related')}
+            disabled={triggering.related}
+            className="flex items-center space-x-2"
+          >
+            <Play className="h-4 w-4" />
+            <span>{triggering.related ? '수집 중...' : '연관키워드 수집'}</span>
+          </Button>
+          <Button 
+            onClick={() => triggerCollection('docs')}
+            disabled={triggering.docs}
+            className="flex items-center space-x-2"
+          >
+            <Play className="h-4 w-4" />
+            <span>{triggering.docs ? '수집 중...' : '문서수 수집'}</span>
+          </Button>
+          <Button onClick={loadHealthData} className="flex items-center space-x-2">
+            <RefreshCw className="h-4 w-4" />
+            <span>새로고침</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Hobby 플랜 안내 */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="flex items-center space-x-2 mb-2">
+          <AlertTriangle className="h-5 w-5 text-yellow-600" />
+          <h3 className="font-semibold text-yellow-800">Vercel Hobby 플랜 제한</h3>
+        </div>
+        <p className="text-sm text-yellow-700 mb-2">
+          Hobby 플랜에서는 Cron 작업이 하루에 한 번만 실행됩니다. 자동 수집은 오전 9시(연관키워드), 오후 9시(문서수)에 실행됩니다.
+        </p>
+        <p className="text-sm text-yellow-700">
+          실시간 수집이 필요한 경우 위의 수동 수집 버튼을 사용하거나 Vercel Pro 플랜으로 업그레이드하세요.
+        </p>
       </div>
 
       {/* 전체 상태 */}

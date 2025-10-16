@@ -13,11 +13,11 @@
   "crons": [
     {
       "path": "/api/collect/related",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/collect/docs", 
-      "schedule": "*/10 * * * *"
+      "schedule": "0 21 * * *"
     }
   ]
 }
